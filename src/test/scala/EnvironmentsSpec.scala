@@ -7,6 +7,8 @@ class EnvironmentsSpec extends FlatSpec with Matchers {
 
     "getTVarsOfType" should "return singleton set with type name for TyVar" in {
       Environments.getTVarsOfType(Type.TyVar("T1")) should be (Set("T1"))
+
+      Environments.getTVarsOfType(Type.TyVar("T2")) should be (Set("T2"))
     }
 
     it should "return union of type names" in {
@@ -23,5 +25,7 @@ class EnvironmentsSpec extends FlatSpec with Matchers {
 
       (Environments.getTVarsOfType(Type.TyCon("Int", List(Type.TyVar("T1"), Type.TyVar("T1"))))
        should be (Set("T1")))
+
+      (Environments.getTVarsOfType(Type.TyCon("Float", List())) should be (Set()))
     }
 }
