@@ -28,4 +28,12 @@ class EnvironmentsSpec extends FlatSpec with Matchers {
 
       (Environments.getTVarsOfType(Type.TyCon("Float", List())) should be (Set()))
     }
+
+    "getTVarsOfScheme" should "return the set difference of the TVars of type and the rest of the tvars in the scheme" in {
+       (Environments.getTVarsOfScheme(TyScheme(Type.TyVar("T1"), Set("T1", "T2")))
+        should be (Set()))
+
+       (Environments.getTVarsOfScheme(TyScheme(Type.TyLam(Type.TyVar("T1"), Type.TyVar("T2")), Set("T1")))
+        should be (Set("T2")))
+    }
 }
