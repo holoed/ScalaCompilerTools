@@ -22,4 +22,10 @@ object Environments {
       case TyScheme(t, tvars) => getTVarsOfType(t) -- tvars
     }
   }
+
+  def getTVarsOfEnv(env:Env) : Set[String] = {
+    env match {
+      case Env(d) => d.values.foldLeft (Set.empty[String]) ((acc, s) => acc | getTVarsOfScheme(s))
+    }
+  }
 }

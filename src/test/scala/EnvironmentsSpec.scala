@@ -36,4 +36,12 @@ class EnvironmentsSpec extends FlatSpec with Matchers {
        (Environments.getTVarsOfScheme(TyScheme(Type.TyLam(Type.TyVar("T1"), Type.TyVar("T2")), Set("T1")))
         should be (Set("T2")))
     }
+
+    "getTVarsOfEnv" should "return the set union of all type names found in the environment" in {
+        (Environments.getTVarsOfEnv(Env(Map(("x", TyScheme(Type.TyVar("T1"), Set("T1"))))))
+         should be (Set()))
+
+        (Environments.getTVarsOfEnv(Env(Map(("x", TyScheme(Type.TyLam(Type.TyVar("T1"), Type.TyVar("T2")), Set("T2"))))))
+         should be (Set("T1")))
+    }
 }
