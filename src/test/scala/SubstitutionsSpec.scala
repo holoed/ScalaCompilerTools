@@ -17,5 +17,8 @@ class SubstitutionsSpec extends FlatSpec with Matchers {
   it should "be able to be looked up by symbol name" in {
     (Substitutions.lookup("T")(Subst(Map("T" -> Type.TyLam(Type.TyVar("V"), Type.TyVar("K")))))
      should be (Type.TyLam(Type.TyVar("V"), Type.TyVar("K"))))
+
+    (Substitutions.lookup("T")(Subst(Map[String, Type]()))
+     should be (Type.TyVar("T")))
   }
 }
