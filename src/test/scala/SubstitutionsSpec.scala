@@ -21,4 +21,20 @@ class SubstitutionsSpec extends FlatSpec with Matchers {
     (Substitutions.lookup("T")(Subst(Map[String, Type]()))
      should be (Type.TyVar("T")))
   }
+
+  "subs" should "substitute var types" in {
+    (Substitutions.subs(Type.TyVar("T"))(Subst(Map("T" -> Type.TyVar("T"))))
+     should be (Type.TyVar("T")))
+
+    (Substitutions.subs(Type.TyVar("T"))(Subst(Map("T" -> Type.TyVar("V"))))
+      should be (Type.TyVar("V")))
+
+    (Substitutions.subs(Type.TyVar("T"))(Subst(Map("T" -> Type.TyLam(Type.TyVar("K"), Type.TyVar("Z")), "K" -> Type.TyVar("L"))))
+      should be (Type.TyLam(Type.TyVar("L"), Type.TyVar("Z"))))
+  }
+
+  it should "substitute lambda types" in {
+    (Substitutions.subs(Type.TyLam(Type.TyVar("T"), Type.TyVar("V")))(Subst(Map("T" -> Type.TyVar("K"), "V" -> Type.TyVar("Z"))))
+     should be (Type.TyLam(Type.TyVar("K"), Type.TyVar("Z"))))
+  }
 }
