@@ -22,4 +22,11 @@ class UnificationSpec extends FlatSpec with Matchers {
     (Unification.mgu (Type.TyCon("Int", List())) (Type.TyVar("a")) (Subst(Map[String, Type]()))
      should be (Subst(Map("a" -> Type.TyVar("a")))))
   }
+
+  it should "be the given substitution if the two function types are the same" in {
+    (Unification.mgu (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
+                     (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
+                     (Subst(Map[String, Type]()))
+     should be (Subst(Map[String, Type]())))
+  }
 }
