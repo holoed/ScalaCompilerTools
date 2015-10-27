@@ -48,6 +48,25 @@ class UnificationSpec extends FlatSpec with Matchers {
     (Unification.mgu (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
                      (Type.TyLam(Type.TyVar("c"), Type.TyVar("d")))
                      (Subst(Map[String, Type]()))
-     should be (Subst(Map("b" -> Type.TyVar("b"), "a" -> Type.TyVar("a")))))  
+     should be (Subst(Map("b" -> Type.TyVar("b"), "a" -> Type.TyVar("a")))))
+  }
+
+  it should "be the given substitutions if the TyCon have the same name and the same tyArgs" in {
+    (Unification.mgu (Type.TyCon("Int", List()))
+                     (Type.TyCon("Int", List()))
+                     (Subst(Map("a" -> Type.TyVar("a"))))
+     should be (Subst(Map("a" -> Type.TyVar("a")))))
+
+    (Unification.mgu (Type.TyCon("Int", List(Type.TyVar("b"))))
+                     (Type.TyCon("Int", List(Type.TyVar("b"))))
+                     (Subst(Map("a" -> Type.TyVar("a"))))
+      should be (Subst(Map("a" -> Type.TyVar("a")))))
+  }
+
+  it should "be the substitutions extended to include a -> t1 if the tyArgs are different" in {
+    (Unification.mgu (Type.TyCon("Int", List(Type.TyVar("a"))))
+                     (Type.TyCon("Int", List(Type.TyVar("b"))))
+                     (Subst(Map[String, Type]()))
+      should be (Subst(Map("a" -> Type.TyVar("a")))))
   }
 }
