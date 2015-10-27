@@ -41,6 +41,13 @@ class UnificationSpec extends FlatSpec with Matchers {
     (Unification.mgu (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
                      (Type.TyLam(Type.TyVar("a"), Type.TyVar("c")))
                      (Subst(Map[String, Type]()))
-     should be (Subst(Map("b" -> Type.TyVar("b")))))  
+     should be (Subst(Map("b" -> Type.TyVar("b")))))
+  }
+
+  it should "be the substitutions extended to both input and output types if they are different" in {
+    (Unification.mgu (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
+                     (Type.TyLam(Type.TyVar("c"), Type.TyVar("d")))
+                     (Subst(Map[String, Type]()))
+     should be (Subst(Map("b" -> Type.TyVar("b"), "a" -> Type.TyVar("a")))))  
   }
 }
