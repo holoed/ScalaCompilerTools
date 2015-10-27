@@ -29,4 +29,18 @@ class UnificationSpec extends FlatSpec with Matchers {
                      (Subst(Map[String, Type]()))
      should be (Subst(Map[String, Type]())))
   }
+
+  it should "be the substitutions extended to include a -> t1 if the input arg a is not a tvar of t2" in {
+    (Unification.mgu (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
+                     (Type.TyLam(Type.TyVar("c"), Type.TyVar("b")))
+                     (Subst(Map[String, Type]()))
+     should be (Subst(Map("a" -> Type.TyVar("a")))))
+  }
+
+  it should "be the substitutions extended to include b -> t1 if the output arg b is not a tvar of t1" in {
+    (Unification.mgu (Type.TyLam(Type.TyVar("a"), Type.TyVar("b")))
+                     (Type.TyLam(Type.TyVar("a"), Type.TyVar("c")))
+                     (Subst(Map[String, Type]()))
+     should be (Subst(Map("b" -> Type.TyVar("b")))))  
+  }
 }
