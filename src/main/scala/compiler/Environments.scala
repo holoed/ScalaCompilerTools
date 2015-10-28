@@ -1,6 +1,5 @@
-package environments
+package compiler
 
-import types._
 import scala.collection.immutable.Set
 import scala.collection.immutable.Map
 

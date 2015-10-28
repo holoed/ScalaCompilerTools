@@ -1,4 +1,4 @@
-package types
+package compiler
 
 sealed trait Type {
   override def toString = Type.toString(this)

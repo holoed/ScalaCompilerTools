@@ -1,8 +1,4 @@
-package unifications
-
-import substitutions._
-import types._
-import environments._
+package compiler
 
 object Unification {
   def mgu (t1:Type)(t2:Type)(sb:Subst):Subst =

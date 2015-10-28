@@ -1,10 +1,4 @@
-package typeinference
-
-import ast._
-import types._
-import environments._
-import unifications._
-import substitutions._
+package compiler
 
 object TypeInfer {
   def newTyVar(state: Int) : (Int, Type) = {
@@ -42,7 +36,11 @@ object TypeInfer {
   def tp(env: Env) (e: Exp) (bt: Type) (subs:Subst) (state:Int) : (Int, Subst) =
     e match {
       case Exp.Lit(v) => (state, Unification.mgu (litToTy(v)) (bt) (subs))
-      //TODO: Add other cases for expression.
+
+      case Exp.Var(n) => (state, if (!containsSc(n)(env)) throw new Exception(s"Cannot find name $n")
+                                 else (findSc(n)(env)) match {
+                                   case TyScheme(t, _) => Unification.mgu (Substitutions.subs(t)(subs)) (bt) (subs)
+                                 })
   }
 
   val predefinedEnv: Env = Env(Map[String, TyScheme]())

@@ -1,5 +1,5 @@
 import org.scalatest._
-import ast._
+import compiler._
 
 class ExpSpec extends FlatSpec with Matchers {
 

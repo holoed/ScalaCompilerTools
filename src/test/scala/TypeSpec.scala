@@ -1,5 +1,5 @@
 import org.scalatest._
-import types._
+import compiler._
 
 class TypeSpec extends FlatSpec with Matchers {
   "A type" should "toString TyLam to its representation" in {

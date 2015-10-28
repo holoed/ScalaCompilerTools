@@ -1,5 +1,5 @@
 import org.scalatest._
-import ast._
+import compiler._
 
 class LiteralSpec extends FlatSpec with Matchers {
 

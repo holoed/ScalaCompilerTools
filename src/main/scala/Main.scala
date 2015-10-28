@@ -1,6 +1,4 @@
-import ast._
-import types._
-import typeinference._
+import compiler._
 
 object Main {
   def main(args: Array[String]) = {

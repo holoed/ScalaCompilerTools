@@ -1,8 +1,5 @@
 import org.scalatest._
-import types._
-import unifications._
-import substitutions._
-
+import compiler._
 
 class UnificationSpec extends FlatSpec with Matchers {
   "The substitution resulting from the unification" should "be the given substitution if the two types are TyVar and they are the same" in {

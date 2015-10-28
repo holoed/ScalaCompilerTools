@@ -1,6 +1,5 @@
 import org.scalatest._
-import environments._
-import types._
+import compiler._
 import scala.collection.immutable.Set
 
 class EnvironmentsSpec extends FlatSpec with Matchers {

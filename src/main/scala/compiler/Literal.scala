@@ -1,4 +1,4 @@
-package ast
+package compiler
 
 sealed trait Literal {
   override def toString = Literal.toString(this)

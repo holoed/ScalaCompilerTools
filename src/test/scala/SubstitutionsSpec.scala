@@ -1,6 +1,5 @@
 import org.scalatest._
-import types._
-import substitutions._
+import compiler._
 
 class SubstitutionsSpec extends FlatSpec with Matchers {
   "A substitution" should "be extended adding a (symbol, type) pair" in {

@@ -1,4 +1,4 @@
-package ast
+package compiler
 
 sealed trait Exp {
   override def toString = Exp.toString(this)

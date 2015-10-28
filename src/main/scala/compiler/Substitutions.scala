@@ -1,6 +1,5 @@
-package substitutions
+package compiler
 
-import types._
 import scala.collection.immutable.Map
 
 sealed case class Subst(subs: Map[String, Type])
