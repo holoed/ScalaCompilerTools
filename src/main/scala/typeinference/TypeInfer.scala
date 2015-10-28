@@ -27,21 +27,31 @@ object TypeInfer {
     case Literal.StringLit(_) => stringCon
   }
 
-  def findSc(n: String, env: Env) : TyScheme = env match {
+  def findSc(n: String) (env: Env) : TyScheme = env match {
     case Env(dict) => dict.get(n).get
   }
 
-  def containsSc(n: String, env: Env) : Boolean = env match {
+  def containsSc(n: String) (env: Env) : Boolean = env match {
     case Env(dict) => dict.contains(n)
   }
 
-  def addSc(n: String, sc: TyScheme, env:Env) : Env = env match {
+  def addSc(n: String) (sc: TyScheme) (env:Env) : Env = env match {
     case Env(dict) => Env(dict + (n -> sc))
   }
 
-  def tp(env: Env, e: Exp, bt: Type, subs:Subst, state:Int) : (Int, Subst) =
+  def tp(env: Env) (e: Exp) (bt: Type) (subs:Subst) (state:Int) : (Int, Subst) =
     e match {
       case Exp.Lit(v) => (state, Unification.mgu (litToTy(v)) (bt) (subs))
       //TODO: Add other cases for expression.
+  }
+
+  val predefinedEnv: Env = Env(Map[String, TyScheme]())
+
+  def typeOf(e:Exp):Type = {
+    val state = 0
+    val (state1, tyVar) = newTyVar(state)
+    val subs = Subst(Map[String, Type]())
+    val (_, subs1) = tp (predefinedEnv) (e) (tyVar) (subs) (state1)
+    Substitutions.subs(tyVar)(subs1)
   }
 }
