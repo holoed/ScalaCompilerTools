@@ -41,6 +41,14 @@ object TypeInfer {
                                  else (findSc(n)(env)) match {
                                    case TyScheme(t, _) => Unification.mgu (Substitutions.subs(t)(subs)) (bt) (subs)
                                  })
+
+      case Exp.Lam(b, e) => {
+        val (state2, tyVarA) = newTyVar(state)
+        val (state3, tyVarB) = newTyVar(state2)
+        val subs1 = Unification.mgu (bt) (Type.TyLam(tyVarA, tyVarB)) (subs)
+        val newEnv = addSc (b) (TyScheme(tyVarA, Set())) (env)
+        tp (newEnv) (e) (tyVarB) (subs1) (state3)
+      }
   }
 
   val predefinedEnv: Env = Env(Map[String, TyScheme]())
