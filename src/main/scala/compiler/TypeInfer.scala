@@ -1,10 +1,11 @@
 package compiler
 
 object TypeInfer {
-  def newTyVar(state: Int) : (Int, Type) = {
+  def newTyVar : State[Type, Int] = for {
+    state <- State.getState[Int]
     val tyVar = Type.TyVar(s"T$state")
-    (state + 1, tyVar)
-  }
+    _ <- State.putState(state + 1)
+  } yield tyVar
 
   def integerCon = Type.TyCon("int", List())
 
@@ -33,31 +34,32 @@ object TypeInfer {
     case Env(dict) => Env(dict + (n -> sc))
   }
 
-  def tp(env: Env) (e: Exp) (bt: Type) (subs:Subst) (state:Int) : (Int, Subst) =
+  def tp(env: Env) (e: Exp) (bt: Type) (subs:Subst) : State[Subst, Int] =
     e match {
-      case Exp.Lit(v) => (state, Unification.mgu (litToTy(v)) (bt) (subs))
+      case Exp.Lit(v) => State.unit (Unification.mgu (litToTy(v)) (bt) (subs))
 
-      case Exp.Var(n) => (state, if (!containsSc(n)(env)) throw new Exception(s"Cannot find name $n")
-                                 else (findSc(n)(env)) match {
-                                   case TyScheme(t, _) => Unification.mgu (Substitutions.subs(t)(subs)) (bt) (subs)
-                                 })
+      case Exp.Var(n) => State.unit (if (!containsSc(n)(env)) throw new Exception(s"Cannot find name $n")
+                                     else (findSc(n)(env)) match {
+                                       case TyScheme(t, _) => Unification.mgu (Substitutions.subs(t)(subs)) (bt) (subs)
+                                     })
 
-      case Exp.Lam(b, e) => {
-        val (state2, tyVarA) = newTyVar(state)
-        val (state3, tyVarB) = newTyVar(state2)
+      case Exp.Lam(b, e) => for {
+        tyVarA <- newTyVar
+        tyVarB <- newTyVar
         val subs1 = Unification.mgu (bt) (Type.TyLam(tyVarA, tyVarB)) (subs)
         val newEnv = addSc (b) (TyScheme(tyVarA, Set())) (env)
-        tp (newEnv) (e) (tyVarB) (subs1) (state3)
-      }
+        ret <- tp (newEnv) (e) (tyVarB) (subs1)
+      } yield ret
   }
 
   val predefinedEnv: Env = Env(Map[String, TyScheme]())
 
   def typeOf(e:Exp):Type = {
-    val state = 0
-    val (state1, tyVar) = newTyVar(state)
-    val subs = Subst(Map[String, Type]())
-    val (_, subs1) = tp (predefinedEnv) (e) (tyVar) (subs) (state1)
-    Substitutions.subs(tyVar)(subs1)
+    val ret = for {
+      tyVar <- newTyVar
+      subs1 <- tp (predefinedEnv) (e) (tyVar) (Subst(Map[String, Type]()))
+      ret <- State.unit (Substitutions.subs(tyVar)(subs1))
+    } yield ret
+    State.runState[Type, Int] (ret) (0)
   }
 }
