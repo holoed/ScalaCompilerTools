@@ -50,9 +50,18 @@ object TypeInfer {
         val newEnv = addSc (b) (TyScheme(tyVarA, Set())) (env)
         ret <- tp (newEnv) (e) (tyVarB) (subs1)
       } yield ret
+
+      case Exp.App(e1, e2) => for {
+        tyVarA <- newTyVar
+        subs1 <- tp (env) (e1) (Type.TyLam(tyVarA, bt)) (subs)
+        ret <- tp (env) (e2) (tyVarA) (subs1)
+      } yield ret
   }
 
-  val predefinedEnv: Env = Env(Map[String, TyScheme]())
+  val predefinedEnv: Env = Env(Map[String, TyScheme](
+    "+" -> TyScheme(Type.TyLam(Type.TyCon("Int", List()), Type.TyLam(Type.TyCon("Int", List()), Type.TyCon("Int", List()))), Set()),
+    "*" -> TyScheme(Type.TyLam(Type.TyCon("Int", List()), Type.TyLam(Type.TyCon("Int", List()), Type.TyCon("Int", List()))), Set())
+  ))
 
   def typeOf(e:Exp):Type = {
     val ret = for {

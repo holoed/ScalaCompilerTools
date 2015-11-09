@@ -10,12 +10,16 @@ final case class State[+T, S](m : S => (S, T)) {
 }
 
 object State {
+  // a -> M a
   def unit[T, S](x:T) : State[T, S] = State(s => (s, x))
 
+  // M a
   def getState[S] : State[S, S] = State(s => (s, s))
 
+  // s -> M ()
   def putState[S](s2: S) : State[Unit, S] = State(_ => (s2, ()))
 
+  // M a -> s -> a
   def runState[T, S](m : State[T,S]) (s:S) : T = m match {
     case State(m) => m(s)._2
   }

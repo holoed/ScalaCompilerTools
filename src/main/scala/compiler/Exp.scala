@@ -5,13 +5,20 @@ sealed trait Exp {
 }
 
 object Exp {
+  // Var :: String -> Exp
   case class Var(s: String) extends Exp
+  // Lam :: (String, Exp) -> Exp
   case class Lam(b: String, e: Exp) extends Exp
+  // Tuple :: (List Exp) -> Exp
   case class Tuple(es: List[Exp]) extends Exp
+  // App :: (Exp, Exp) -> Exp
   case class App(e1: Exp, e2: Exp) extends Exp
+  // Let :: (String, Exp, Exp) -> Exp
   case class Let(b: String, e1: Exp, e2: Exp) extends Exp
+  // Lit :: Literal -> Exp
   case class Lit(l : Literal) extends Exp
 
+  // toString :: Exp -> String
   def toString(e: Exp) : String = {
     e match {
       case Var(s) => s

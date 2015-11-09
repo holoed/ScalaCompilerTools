@@ -26,4 +26,12 @@ class TypeInferSpec extends FlatSpec with Matchers {
     (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.Var("y"))))
      should be (Type.TyLam(Type.TyVar("T1"), Type.TyLam(Type.TyVar("T4"), Type.TyVar("T4")))))
   }
+
+  it should "infer the type of function application" in {
+    (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.App(Exp.App(Exp.Var("+"), Exp.Var("x")), Exp.Var("y")))))
+     should be (Type.TyLam(Type.TyCon("Int", List()), Type.TyLam(Type.TyCon("Int", List()), Type.TyCon("Int", List())))))
+
+    (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.App(Exp.App(Exp.Var("*"), Exp.Var("x")), Exp.Var("y")))))
+     should be (Type.TyLam(Type.TyCon("Int", List()), Type.TyLam(Type.TyCon("Int", List()), Type.TyCon("Int", List())))))
+  }
 }
