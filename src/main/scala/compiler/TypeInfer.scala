@@ -3,7 +3,7 @@ package compiler
 object TypeInfer {
   def newTyVar : State[Type, Int] = for {
     state <- State.getState[Int]
-    val tyVar = Type.TyVar(s"T$state")
+    tyVar = Type.TyVar(s"T$state")
     _ <- State.putState(state + 1)
   } yield tyVar
 
@@ -46,8 +46,8 @@ object TypeInfer {
       case Exp.Lam(b, e) => for {
         tyVarA <- newTyVar
         tyVarB <- newTyVar
-        val subs1 = Unification.mgu (bt) (Type.TyLam(tyVarA, tyVarB)) (subs)
-        val newEnv = addSc (b) (TyScheme(tyVarA, Set())) (env)
+        subs1 = Unification.mgu (bt) (Type.TyLam(tyVarA, tyVarB)) (subs)
+        newEnv = addSc (b) (TyScheme(tyVarA, Set())) (env)
         ret <- tp (newEnv) (e) (tyVarB) (subs1)
       } yield ret
 
@@ -60,14 +60,14 @@ object TypeInfer {
       case Exp.Tuple(args) => for {
         tyArgs <- StateUtilities.mapM ((_:Exp) => newTyVar) (args)
         s1 <- StateUtilities.foldM2 (tp (env)) (args) (tyArgs) (subs)
-        val s2 = Unification.mgu (bt) (Type.TyCon ("Tuple", tyArgs)) (s1)
+        s2 = Unification.mgu (bt) (Type.TyCon ("Tuple", tyArgs)) (s1)
       } yield s2
 
       case Exp.Let(name, e1, e2) => for {
         t <- newTyVar
         subs1 <- tp (env) (e1) (t) (subs)
-        val t1 = Substitutions.subs(t) (subs1)
-        val newScheme = TyScheme(t1, Environments.getTVarsOfType(t1) -- Environments.getTVarsOfEnv(env))
+        t1 = Substitutions.subs(t) (subs1)
+        newScheme = TyScheme(t1, Environments.getTVarsOfType(t1) -- Environments.getTVarsOfEnv(env))
         ret <- tp (addSc (name) (newScheme) (env)) (e2) (bt) (subs1)
       } yield ret
   }
