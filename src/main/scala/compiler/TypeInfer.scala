@@ -7,13 +7,13 @@ object TypeInfer {
     _ <- State.putState(state + 1)
   } yield tyVar
 
-  def integerCon = Type.TyCon("int", List())
+  def integerCon = Type.TyCon("Int", List())
 
-  def floatCon = Type.TyCon("float", List())
+  def floatCon = Type.TyCon("Float", List())
 
-  def charCon = Type.TyCon("char", List())
+  def charCon = Type.TyCon("Char", List())
 
-  def stringCon = Type.TyCon("string", List())
+  def stringCon = Type.TyCon("String", List())
 
   def litToTy(lit: Literal) : Type = lit match {
     case Literal.CharLit(_) => charCon
@@ -62,6 +62,14 @@ object TypeInfer {
         s1 <- StateUtilities.foldM2 (tp (env)) (args) (tyArgs) (subs)
         val s2 = Unification.mgu (bt) (Type.TyCon ("Tuple", tyArgs)) (s1)
       } yield s2
+
+      case Exp.Let(name, e1, e2) => for {
+        t <- newTyVar
+        subs1 <- tp (env) (e1) (t) (subs)
+        val t1 = Substitutions.subs(t) (subs1)
+        val newScheme = TyScheme(t1, Environments.getTVarsOfType(t1) -- Environments.getTVarsOfEnv(env))
+        ret <- tp (addSc (name) (newScheme) (env)) (e2) (bt) (subs1)
+      } yield ret
   }
 
   val predefinedEnv: Env = Env(Map[String, TyScheme](

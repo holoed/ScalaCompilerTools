@@ -3,7 +3,7 @@ import compiler._
 
 class TypeInferSpec extends FlatSpec with Matchers {
   "Type Inference" should "for a literal return the literal type" in {
-    TypeInfer.typeOf (Exp.Lit(Literal.CharLit('c'))) should be (Type.TyCon("char", List()))
+    TypeInfer.typeOf (Exp.Lit(Literal.CharLit('c'))) should be (Type.TyCon("Char", List()))
   }
 
   it should "for a lonely var not in the environment it should throw an exception" in {
@@ -41,5 +41,16 @@ class TypeInferSpec extends FlatSpec with Matchers {
 
     (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.Tuple(List(Exp.Var("y"), Exp.Var("x"))))))
      should be (Type.TyLam(Type.TyVar("T6"), Type.TyLam(Type.TyVar("T5"), Type.TyCon("Tuple", List(Type.TyVar("T5"), Type.TyVar("T6")))))))
+  }
+
+  it should "infer the type of the let-in" in {
+    (TypeInfer.typeOf (Exp.Let("x", Exp.Lit(Literal.IntegerLit(42)), Exp.Var("x")))
+     should be (Type.TyCon("Int", List())))
+
+    (TypeInfer.typeOf (Exp.Let("f", Exp.Lam("x", Exp.Var("x")), Exp.App(Exp.Var("f"), Exp.Lit(Literal.StringLit("Hello")))))
+     should be (Type.TyCon("String", List())))
+
+    (TypeInfer.typeOf (Exp.Let("f", Exp.Lam("x", Exp.App(Exp.Var("+"), Exp.Var("x"))), Exp.App(Exp.Var("f"), Exp.Lit(Literal.IntegerLit(5)))))
+     should be (Type.TyLam(Type.TyCon("Int", List()), Type.TyCon("Int", List()))))
   }
 }
