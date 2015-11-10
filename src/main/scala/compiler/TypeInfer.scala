@@ -56,6 +56,12 @@ object TypeInfer {
         subs1 <- tp (env) (e1) (Type.TyLam(tyVarA, bt)) (subs)
         ret <- tp (env) (e2) (tyVarA) (subs1)
       } yield ret
+
+      case Exp.Tuple(args) => for {
+        tyArgs <- StateUtilities.mapM ((_:Exp) => newTyVar) (args)
+        s1 <- StateUtilities.foldM2 (tp (env)) (args) (tyArgs) (subs)
+        val s2 = Unification.mgu (bt) (Type.TyCon ("Tuple", tyArgs)) (s1)
+      } yield s2
   }
 
   val predefinedEnv: Env = Env(Map[String, TyScheme](

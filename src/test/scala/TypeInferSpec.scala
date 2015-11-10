@@ -34,4 +34,12 @@ class TypeInferSpec extends FlatSpec with Matchers {
     (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.App(Exp.App(Exp.Var("*"), Exp.Var("x")), Exp.Var("y")))))
      should be (Type.TyLam(Type.TyCon("Int", List()), Type.TyLam(Type.TyCon("Int", List()), Type.TyCon("Int", List())))))
   }
+
+  it should "infer the type of the tuple" in {
+    (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.Tuple(List(Exp.Var("x"), Exp.Var("y"))))))
+     should be (Type.TyLam(Type.TyVar("T5"), Type.TyLam(Type.TyVar("T6"), Type.TyCon("Tuple", List(Type.TyVar("T5"), Type.TyVar("T6")))))))
+
+    (TypeInfer.typeOf (Exp.Lam("x", Exp.Lam("y", Exp.Tuple(List(Exp.Var("y"), Exp.Var("x"))))))
+     should be (Type.TyLam(Type.TyVar("T6"), Type.TyLam(Type.TyVar("T5"), Type.TyCon("Tuple", List(Type.TyVar("T5"), Type.TyVar("T6")))))))
+  }
 }

@@ -13,7 +13,12 @@ object Type {
     t match {
       case TyVar (s) => s
       case TyLam(t1, t2) => s"$t1 -> $t2"
-      case TyCon(s, _) => s
+      case TyCon(s, List()) => s
+      case TyCon(s, ts) => {
+        val out = ts.map(t => t.toString)
+                    .mkString(", ")
+        s"$s($out)"
+      }
     }
   }
 }
