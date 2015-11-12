@@ -68,7 +68,8 @@ object TypeInfer {
         subs1 <- tp (env) (e1) (t) (subs)
         t1 = Substitutions.subs(t) (subs1)
         newScheme = TyScheme(t1, Environments.getTVarsOfType(t1) -- Environments.getTVarsOfEnv(env))
-        ret <- tp (addSc (name) (newScheme) (env)) (e2) (bt) (subs1)
+        newEnv = addSc (name) (newScheme) (env)
+        ret <- tp (newEnv) (e2) (bt) (subs1)
       } yield ret
   }
 
